@@ -21,7 +21,7 @@ jobs:
 
     - name: Build 32-bit dynamic library
       run: |
-        i686-w64-mingw32-gcc -shared -o ToText.dll -Wl,--out-implib,libToText.a ToText.c
+        i686-w64-mingw32-gcc -shared -static -O3 -o ToText.dll -Wl,--out-implib,libToText.a ToText.c
 
     - name: Upload built library
       uses: actions/upload-artifact@v2
