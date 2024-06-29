@@ -24,7 +24,7 @@ jobs:
     - name: Build 32-bit DLL
       shell: cmd
       run: |
-        "C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw32\bin\gcc.exe" -shared -o ToText.dll ToText.c
+        "C:\ProgramData\mingw64\mingw32\bin\gcc.exe" -shared -o ToText.dll ToText.c
 
     - name: Upload DLL
       uses: actions/upload-artifact@v2
