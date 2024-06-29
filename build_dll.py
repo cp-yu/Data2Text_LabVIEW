@@ -32,4 +32,4 @@ ffibuilder.set_source("dlltest", """
 """)
 
 # 编译生成DLL
-ffibuilder.compile()
+ffibuilder.compile(target="dlltest.dll", verbose=True)
