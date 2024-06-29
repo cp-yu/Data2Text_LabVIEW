@@ -19,15 +19,20 @@ jobs:
     - name: Install MinGW
       run: |
         choco install mingw -y --params "/32bit"
-        echo "C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw32\bin" | Out-File -Append -FilePath $env:GITHUB_PATH
+        echo "C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw32\bin" >> $GITHUB_PATH
+
+    - name: Verify MinGW installation
+      run: |
+        gcc --version
+        where gcc
 
     - name: Build 32-bit DLL
       shell: cmd
       run: |
-        "C:\ProgramData\mingw64\mingw32\bin\gcc.exe" -shared -o ToText.dll ToText.c
+        gcc -shared -o ToText_32.dll -m32 ToText.c
 
     - name: Upload DLL
       uses: actions/upload-artifact@v2
       with:
         name: dll-files
-        path: ./ToText_32.dll  # 上传生成的DLL文件
+        path: ./ToText_32.dll
