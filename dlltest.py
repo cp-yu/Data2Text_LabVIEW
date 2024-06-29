@@ -1,11 +1,14 @@
 import ctypes
+import os
 
 # 加载DLL文件
-dll = ctypes.CDLL('./dlltest.dll')
+dll_path = os.path.abspath('ToText.dll')
+if not os.path.exists(dll_path):
+    raise FileNotFoundError(f"The DLL file was not found: {dll_path}")
+
+dll = ctypes.CDLL(dll_path)
 
 # 定义函数原型
-# void ToText(double* list_a, int len_a, double* list_b, int len_b, 
-#             const char* title, const char* extra_info, const char* col_name_a, const char* col_name_b);
 dll.ToText.argtypes = [
     ctypes.POINTER(ctypes.c_double), ctypes.c_int,
     ctypes.POINTER(ctypes.c_double), ctypes.c_int,
