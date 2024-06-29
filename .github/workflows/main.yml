@@ -19,10 +19,12 @@ jobs:
         choco install mingw
         Import-Module "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
         refreshenv
+      shell: powershell
 
     - name: Build 32-bit dynamic library
       run: |
         gcc -m32 -shared -o ToText.dll -Wl,--out-implib,libToText.a ToText.c
+      shell: cmd
 
     - name: Upload built library
       uses: actions/upload-artifact@v2
