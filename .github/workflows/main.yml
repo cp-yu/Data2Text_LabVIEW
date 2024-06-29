@@ -19,7 +19,7 @@ jobs:
     - name: Install MinGW
       run: |
         choco install mingw -y --params "/32bit"
-        refreshenv
+        echo "C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw32\bin" | Out-File -Append -FilePath $env:GITHUB_PATH
 
     - name: Build 32-bit DLL
       run: |
