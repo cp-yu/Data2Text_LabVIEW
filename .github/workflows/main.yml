@@ -8,23 +8,20 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set up MinGW
+    - name: Install mingw-w64 for cross-compilation
       run: |
-        choco install mingw
-        Import-Module "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
-        refreshenv
-      shell: powershell
+        sudo apt-get update
+        sudo apt-get install -y mingw-w64
 
     - name: Build 32-bit dynamic library
       run: |
-        gcc -m32 -shared -o ToText.dll -Wl,--out-implib,libToText.a ToText.c
-      shell: cmd
+        i686-w64-mingw32-gcc -shared -o ToText.dll -Wl,--out-implib,libToText.a ToText.c
 
     - name: Upload built library
       uses: actions/upload-artifact@v2
