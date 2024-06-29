@@ -1,40 +1,32 @@
-name: Build DLL
+name: Build 32-bit Windows Dynamic Library
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   pull_request:
-    branches:
-      - main
+    branches: [ main ]
 
 jobs:
   build:
-    runs-on: windows-2016
+    runs-on: windows-latest
 
     steps:
-    - name: Checkout repository
+    - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Install MinGW 32-bit
+    - name: Set up MinGW
       run: |
-        choco install mingw -y
-        echo "C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw32\bin" >> $env:GITHUB_PATH
-        echo "C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw32\bin" >> $env:Path
+        choco install mingw
         refreshenv
 
-    - name: Verify MinGW installation
+    - name: Build 32-bit dynamic library
       run: |
-        C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw32\bin\gcc --version
-        where C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw32\bin\gcc
+        gcc -m32 -shared -o ToText.dll -Wl,--out-implib,libToText.a ToText.c
 
-    - name: Build 32-bit DLL
-      shell: cmd
-      run: |
-        C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw32\bin\gcc -shared -o ToText_32.dll -m32 ToText.c
-
-    - name: Upload DLL
+    - name: Upload built library
       uses: actions/upload-artifact@v2
       with:
-        name: dll-files
-        path: ./ToText_32.dll
+        name: ToText
+        path: |
+          ToText.dll
+          libToText.a
