@@ -16,14 +16,14 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Install MinGW
+    - name: Install 32-bit MinGW
       run: |
-        choco install mingw -y
+        choco install mingw -y --params "/32bit"
         echo "C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw32\bin" | Out-File -Append -FilePath $env:GITHUB_PATH
 
     - name: Build 32-bit DLL
       run: |
-        i686-w64-mingw32-gcc -shared -o ToText.dll ToText.c
+        gcc -shared -o ToText.dll ToText.c
 
     - name: Upload DLL
       uses: actions/upload-artifact@v2
