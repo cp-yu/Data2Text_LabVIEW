@@ -16,11 +16,12 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Install MinGW
+    - name: Install MinGW 32-bit
       run: |
-        choco install mingw -y --params "/32bit"
-        echo "C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw32\bin" >> $env:GITHUB_PATH
-        echo "C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw32\bin" >> $env:Path
+        choco install mingw --params "/InstallDir:C:\mingw32 /32bit" -y
+        echo "C:\mingw32\bin" >> $env:GITHUB_PATH
+        echo "C:\mingw32\bin" >> $env:Path
+        refreshenv
 
     - name: Verify MinGW installation
       run: |
