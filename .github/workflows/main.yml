@@ -19,9 +19,13 @@ jobs:
     - name: Install MinGW 32-bit
       run: |
         choco install mingw --params "/InstallDir:C:\mingw32 /32bit" -y
-        echo "C:\mingw32\bin" >> $env:GITHUB_PATH
-        echo "C:\mingw32\bin" >> $env:Path
-        refreshenv
+
+    - name: Add MinGW to PATH
+      shell: powershell
+      run: |
+        $oldPath = [Environment]::GetEnvironmentVariable('Path', [EnvironmentVariableTarget]::Machine)
+        $newPath = 'C:\mingw32\bin;' + $oldPath
+        [Environment]::SetEnvironmentVariable('Path', $newPath, [EnvironmentVariableTarget]::Machine)
 
     - name: Verify MinGW installation
       run: |
