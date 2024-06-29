@@ -16,23 +16,17 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.8'
-        architecture: 'x86'  # 使用32位Python环境
-
-    - name: Install dependencies
+    - name: Install MinGW
       run: |
-        python -m pip install --upgrade pip
-        pip install cffi
+        choco install mingw -y
+        set PATH=C:\Program Files\mingw-w64\bin;%PATH%
 
     - name: Build 32-bit DLL
       run: |
-        python build_dll.py
+        gcc -shared -o ToText.dll ToText.c
 
     - name: Upload DLL
       uses: actions/upload-artifact@v2
       with:
         name: dll-files
-        path: ./dlltest.*  # 上传生成的DLL文件和其他相关文件
+        path: ./ToText.dll  # 上传生成的DLL文件
