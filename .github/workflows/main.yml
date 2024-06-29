@@ -19,7 +19,7 @@ jobs:
     - name: Install MinGW
       run: |
         choco install mingw -y
-        set PATH=C:\Program Files\mingw-w64\bin;%PATH%
+        echo "C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw64\bin" | Out-File -Append -FilePath $env:GITHUB_PATH
 
     - name: Build 32-bit DLL
       run: |
