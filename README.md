@@ -1,0 +1,2 @@
+# Data2Text_LabVIEW
+仅仅用于测试github action，以及生成用于LabVIEW数据存储的DLL
