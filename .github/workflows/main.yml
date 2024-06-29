@@ -21,7 +21,8 @@ jobs:
         choco install mingw -y --params "/32bit"
         echo "C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw32\bin" | Out-File -Append -FilePath $env:GITHUB_PATH
 
-    - name: Build 32-bit DLL
+- name: Build 32-bit DLL
+      shell: cmd
       run: |
         "C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw32\bin\gcc.exe" -shared -o ToText.dll ToText.c
 
