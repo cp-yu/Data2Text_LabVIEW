@@ -17,6 +17,7 @@ jobs:
     - name: Set up MinGW
       run: |
         choco install mingw
+        Import-Module "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
         refreshenv
 
     - name: Build 32-bit dynamic library
