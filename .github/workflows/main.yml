@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: windows-2016
 
     steps:
     - name: Checkout repository
@@ -18,20 +18,20 @@ jobs:
 
     - name: Install MinGW 32-bit
       run: |
-        choco install mingw --params "/InstallDir:C:\mingw32 /32bit" -y
-        echo "C:\mingw32\bin" >> $env:GITHUB_PATH
-        echo "C:\mingw32\bin" >> $env:Path
+        choco install mingw -y
+        echo "C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw32\bin" >> $env:GITHUB_PATH
+        echo "C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw32\bin" >> $env:Path
         refreshenv
 
     - name: Verify MinGW installation
       run: |
-        C:\mingw32\bin\gcc --version
-        where C:\mingw32\bin\gcc
+        C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw32\bin\gcc --version
+        where C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw32\bin\gcc
 
     - name: Build 32-bit DLL
       shell: cmd
       run: |
-        C:\mingw32\bin\gcc -shared -o ToText_32.dll -m32 ToText.c
+        C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw32\bin\gcc -shared -o ToText_32.dll -m32 ToText.c
 
     - name: Upload DLL
       uses: actions/upload-artifact@v2
