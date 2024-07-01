@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
@@ -19,28 +19,22 @@ jobs:
     - name: Install .NET SDK
       uses: actions/setup-dotnet@v2
       with:
-        dotnet-version: '7.x'  # Use the .NET version you need
+        dotnet-version: '4.6.2'
 
-    - name: Install MSVC build tools
-      run: |
-        choco install visualstudio2019buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.VCTools --includeRecommended --includeOptional"
+    - name: Install necessary packages
+      run: sudo apt-get install -y mingw-w64
 
     - name: Build DLL
       run: |
-        # Set up environment for MSVC
-        call "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Auxiliary\Build\vcvarsall.bat" x64
-        # Compile the C file to object file
-        cl /c totext.c
-        # Create the .NET DLL using the object file
-        dotnet new classlib -o MyLibrary
-        move totext.obj MyLibrary\
-        cd MyLibrary
-        # Add necessary NuGet packages
-        dotnet add package Microsoft.CSharp
-        dotnet build -o ./out
+        # Compile the C file to object file targeting Windows
+        x86_64-w64-mingw32-gcc -c -o totext.o totext.c
+        # Create the DLL file targeting Windows
+        x86_64-w64-mingw32-gcc -shared -o totext.dll totext.o
+        mkdir -p MyLibrary/out
+        mv totext.dll MyLibrary/out/
 
     - name: Upload artifact
       uses: actions/upload-artifact@v3
       with:
-        name: my-dotnet-dll
+        name: my-windows-dll
         path: MyLibrary/out
