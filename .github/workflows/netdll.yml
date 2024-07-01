@@ -1,0 +1,46 @@
+name: Build DLL from C file
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install .NET SDK
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: '7.x'  # Use the .NET version you need
+
+    - name: Install MSVC build tools
+      run: |
+        choco install visualstudio2019buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.VCTools --includeRecommended --includeOptional"
+
+    - name: Build DLL
+      run: |
+        # Set up environment for MSVC
+        call "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Auxiliary\Build\vcvarsall.bat" x64
+        # Compile the C file to object file
+        cl /c totext.c
+        # Create the .NET DLL using the object file
+        dotnet new classlib -o MyLibrary
+        move totext.obj MyLibrary\
+        cd MyLibrary
+        # Add necessary NuGet packages
+        dotnet add package Microsoft.CSharp
+        dotnet build -o ./out
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: my-dotnet-dll
+        path: MyLibrary/out

@@ -1,4 +1,4 @@
-name: Build 32-bit Windows Dynamic Library
+name: Build 32-bit and 64-bit Windows Dynamic Library
 
 on:
   push:
@@ -21,12 +21,18 @@ jobs:
 
     - name: Build 32-bit dynamic library
       run: |
-        i686-w64-mingw32-gcc -shared -static -O3 -o ToText.dll -Wl,--out-implib,libToText.a ToText.c
+        i686-w64-mingw32-gcc -shared -static -O3 -o ToText32.dll -Wl,--out-implib,libToText32.a ToText.c
 
-    - name: Upload built library
+    - name: Build 64-bit dynamic library
+      run: |
+        x86_64-w64-mingw32-gcc -shared -static -O3 -o ToText64.dll -Wl,--out-implib,libToText64.a ToText.c
+
+    - name: Upload built libraries
       uses: actions/upload-artifact@v2
       with:
         name: ToText
         path: |
-          ToText.dll
-          libToText.a
+          ToText32.dll
+          libToText32.a
+          ToText64.dll
+          libToText64.a
