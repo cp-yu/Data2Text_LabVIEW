@@ -10,26 +10,25 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Install .NET SDK
-      uses: actions/setup-dotnet@v2
-      with:
-        dotnet-version: '4.6.2'
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v1.0.2
 
     - name: Install necessary packages
-      run: sudo apt-get install -y mingw-w64
+      run: |
+        choco install mingw
 
     - name: Build DLL
       run: |
         # Compile the C file to object file targeting Windows
-        x86_64-w64-mingw32-gcc -c -o totext.o totext.c
+        gcc -c -o totext.o totext.c
         # Create the DLL file targeting Windows
-        x86_64-w64-mingw32-gcc -shared -o totext.dll totext.o
+        gcc -shared -o totext.dll totext.o
         mkdir -p MyLibrary/out
         mv totext.dll MyLibrary/out/
 
