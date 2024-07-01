@@ -23,20 +23,20 @@ jobs:
       run: |
         for file in *.c; do
           base_name=$(basename "$file" .c)
-          i686-w64-mingw32-gcc -shared -static -O3 -o "${base_name}32.dll" "$file"
+          i686-w64-mingw32-gcc -shared -static -O3 -fPIC -o "${base_name}32.dll" "$file"
         done
 
     - name: Build 64-bit dynamic libraries
       run: |
         for file in *.c; do
           base_name=$(basename "$file" .c)
-          x86_64-w64-mingw32-gcc -shared -static -O3 -o "${base_name}64.dll" "$file"
+          x86_64-w64-mingw32-gcc -shared -static -O3 -fPIC -o "${base_name}64.dll" "$file"
         done
 
     - name: Upload built libraries
       uses: actions/upload-artifact@v2
       with:
-        name: ToText
+        name: ${{ github.repository }}-${{ env.CURRENT_TIME }}
         path: |
           *32.dll
           *64.dll
