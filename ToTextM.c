@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-__declspec(dllexport) void ToText(double** lists, int length, int num_columns, const char* title, const char* extra_info, const char* col_names) {
+__declspec(dllexport) void ToText(double* lists, int length, int num_columns, const char* title, const char* extra_info, const char* col_names) {
     FILE *file = fopen(title, "w");
     if (file) {
         // Write extra info
@@ -28,7 +28,7 @@ __declspec(dllexport) void ToText(double** lists, int length, int num_columns, c
         // Write data rows
         for (int i = 0; i < length; i++) {
             for (int j = 0; j < num_columns; j++) {
-                fprintf(file, "%f%s", lists[j][i], (j == num_columns - 1) ? "\n" : "\t");
+                fprintf(file, "%f%s", lists[i + j * length], (j == num_columns - 1) ? "\n" : "\t");
             }
             fflush(file);  // Flush the file buffer to ensure data is written immediately
             printf("Wrote row %d\n", i);
