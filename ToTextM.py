@@ -25,7 +25,7 @@ list_b = np.array([4.0, 5.0, 6.0], dtype=np.float64)
 list_c = np.array([7.0, 8.0, 9.0], dtype=np.float64)
 lists = [list_a, list_b, list_c]
 lengths = np.array([len(list_a), len(list_b), len(list_c)], dtype=np.int32)
-col_names = [b"Column A", b"Column B", b"Column C"]
+col_names = b"Column A,Column B,Column C"
 
 # Convert lists to ctypes format
 list_pointers = (ctypes.POINTER(ctypes.c_double) * len(lists))(*[lst.ctypes.data_as(ctypes.POINTER(ctypes.c_double)) for lst in lists])
