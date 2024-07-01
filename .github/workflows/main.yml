@@ -33,10 +33,16 @@ jobs:
           x86_64-w64-mingw32-gcc -shared -static -O3 -fPIC -o "${base_name}64.dll" "$file"
         done
 
+    - name: Get current Git hash and time
+      id: get_info
+      run: |
+        echo "GIT_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+        echo "CURRENT_TIME=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
+
     - name: Upload built libraries
       uses: actions/upload-artifact@v2
       with:
-        name: Data2Text_LabVIEW-${{ env.GIT_HASH }}
+        name: Data2Text_LabVIEW-${{ env.GIT_HASH }}-${{ env.CURRENT_TIME }}
         path: |
           *32.dll
           *64.dll
