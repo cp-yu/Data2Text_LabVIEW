@@ -19,20 +19,24 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y mingw-w64
 
-    - name: Build 32-bit dynamic library
+    - name: Build 32-bit dynamic libraries
       run: |
-        i686-w64-mingw32-gcc -shared -static -O3 -o ToText32.dll -Wl,--out-implib,libToText32.a ToText.c
+        for file in *.c; do
+          base_name=$(basename "$file" .c)
+          i686-w64-mingw32-gcc -shared -static -O3 -o "${base_name}32.dll" "$file"
+        done
 
-    - name: Build 64-bit dynamic library
+    - name: Build 64-bit dynamic libraries
       run: |
-        x86_64-w64-mingw32-gcc -shared -static -O3 -o ToText64.dll -Wl,--out-implib,libToText64.a ToText.c
+        for file in *.c; do
+          base_name=$(basename "$file" .c)
+          x86_64-w64-mingw32-gcc -shared -static -O3 -o "${base_name}64.dll" "$file"
+        done
 
     - name: Upload built libraries
       uses: actions/upload-artifact@v2
       with:
         name: ToText
         path: |
-          ToText32.dll
-          libToText32.a
-          ToText64.dll
-          libToText64.a
+          *32.dll
+          *64.dll
