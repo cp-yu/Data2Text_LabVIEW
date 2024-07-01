@@ -20,7 +20,7 @@ totext_dll.ToText.argtypes = [
 ]
 
 # Example data
-list_a = np.array([1.0, 2.0, 3.0], dtype=np.float64)
+list_a = np.array([1.0, 222.0, 3.0], dtype=np.float64)
 list_b = np.array([4.0, 5.0, 6.0], dtype=np.float64)
 list_c = np.array([7.0, 8.0, 9.0], dtype=np.float64)
 lists = [list_a, list_b, list_c]
