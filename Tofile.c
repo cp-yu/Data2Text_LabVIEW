@@ -56,7 +56,7 @@ __declspec(dllexport) char* ToText(char* lists, const char* title_type, const ch
 
     // Change the file extension to .bmp
     static char bmp_filename[256];
-    snprintf(bmp_filename, sizeof(bmp_filename), "data/%s_%04d%02d%02d_%02d%02d%02d.bmp", 
+    snprintf(bmp_filename, sizeof(bmp_filename), "data\\%s_%04d%02d%02d_%02d%02d%02d.bmp", 
              title_type, tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, 
              tm.tm_hour, tm.tm_min, tm.tm_sec);
 
