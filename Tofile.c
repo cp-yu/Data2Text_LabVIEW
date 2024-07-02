@@ -4,7 +4,7 @@
 #include <time.h>
 #include <direct.h>  // For _mkdir on Windows
 
-__declspec(dllexport) void ToText(char* lists, const char* title_type, const char* extra_info, const char* col_names) {
+__declspec(dllexport) char* ToText(char* lists, const char* title_type, const char* extra_info, const char* col_names) {
     // Create data directory if it does not exist
     _mkdir("data");
 
@@ -51,5 +51,14 @@ __declspec(dllexport) void ToText(char* lists, const char* title_type, const cha
         printf("File %s closed\n", filename);
     } else {
         printf("Failed to open file %s\n", filename);
+        return NULL;
     }
+
+    // Change the file extension to .bmp
+    static char bmp_filename[256];
+    snprintf(bmp_filename, sizeof(bmp_filename), "data/%s_%04d%02d%02d_%02d%02d%02d.bmp", 
+             title_type, tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, 
+             tm.tm_hour, tm.tm_min, tm.tm_sec);
+
+    return bmp_filename;
 }

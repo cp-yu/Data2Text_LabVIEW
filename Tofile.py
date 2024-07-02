@@ -1,7 +1,7 @@
 import ctypes
 import os
 # 加载DLL文件
-dll_path = os.path.abspath('ToText.dll')
+dll_path = os.path.abspath('Tofile32.dll')
 if not os.path.exists(dll_path):
     raise FileNotFoundError(f"The DLL file was not found: {dll_path}")
 
@@ -15,7 +15,7 @@ dll.ToText.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes
 dll.ToText.restype = None
 
 # 测试数据
-lists = b"1.0,2.0,3.0,4.0,5.0,6.0"
+lists = b"1.0,2.0,3.0\n4.0,5.0,6.0"
 title_type = b"test_title"
 extra_info = b"This is some extra information"
 col_names = b"Column1,Column2,Column3"
