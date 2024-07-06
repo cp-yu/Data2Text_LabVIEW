@@ -84,24 +84,36 @@ __declspec(dllexport) char* DCWrite(const char* target_data, const char* tempera
 
         // First section
         fprintf(file, "[%s]\n", col_name_1);
-        for (int i = 0; i < temp_count; i++) {
-            char* line = strtok(section, "\t");
-            for (int j = 0; j < freq_count; j++) {
-                fprintf(file, "%s\t%s\t%s\n", temp_tokens[i], freq_tokens[j], line ? line : "");
-                line = strtok(NULL, "\t");
+        fprintf(file, "Temperature(℃)\tFrequency(Hz)\t%s\n", col_name_1);
+
+        while (section != NULL && strncmp(section, "[", 1) != 0) {
+            char* line = strdup(section);
+            char* value = strtok(line, "\t");
+            for (int i = 0; i < temp_count; i++) {
+                for (int j = 0; j < freq_count; j++) {
+                    fprintf(file, "%s\t%s\t%s\n", temp_tokens[i], freq_tokens[j], value);
+                    value = strtok(NULL, "\t");
+                }
             }
+            free(line);
             section = strtok(NULL, "\n");
         }
 
         // Second section
         fprintf(file, "[%s]\n", col_name_2);
+        fprintf(file, "Temperature(℃)\tFrequency(Hz)\t%s\n", col_name_2);
+
         section = strtok(NULL, "\n");
-        for (int i = 0; i < temp_count; i++) {
-            char* line = strtok(section, "\t");
-            for (int j = 0; j < freq_count; j++) {
-                fprintf(file, "%s\t%s\t%s\n", temp_tokens[i], freq_tokens[j], line ? line : "");
-                line = strtok(NULL, "\t");
+        while (section != NULL && strncmp(section, "[", 1) != 0) {
+            char* line = strdup(section);
+            char* value = strtok(line, "\t");
+            for (int i = 0; i < temp_count; i++) {
+                for (int j = 0; j < freq_count; j++) {
+                    fprintf(file, "%s\t%s\t%s\n", temp_tokens[i], freq_tokens[j], value);
+                    value = strtok(NULL, "\t");
+                }
             }
+            free(line);
             section = strtok(NULL, "\n");
         }
 
@@ -134,4 +146,32 @@ __declspec(dllexport) char* DCWrite(const char* target_data, const char* tempera
              tm.tm_hour, tm.tm_min, tm.tm_sec);
 
     return bmp_filename;
+}
+
+// Example usage
+int main() {
+    char target_data[] = "[0, 0, 0]\n"
+                         "0.000000E+0\t1.000000E+0\t2.000000E+0\t3.000000E+0\t0.000000E+0\n"
+                         "4.000000E+0\t5.000000E+0\t6.000000E+0\t7.000000E+0\t0.000000E+0\n"
+                         "8.000000E+0\t9.000000E+0\t1.000000E+1\t1.100000E+1\t0.000000E+0\n"
+                         "1.200000E+1\t1.300000E+1\t1.400000E+1\t1.500000E+1\t0.000000E+0\n"
+                         "[1, 0, 0]\n"
+                         "0.000000E+0\t0.000000E+0\t0.000000E+0\t0.000000E+0\t0.000000E+0\n"
+                         "0.000000E+0\t0.000000E+0\t0.000000E+0\t0.000000E+0\t0.000000E+0\n"
+                         "0.000000E+0\t0.000000E+0\t0.000000E+0\t0.000000E+0\t0.000000E+0\n"
+                         "0.000000E+0\t0.000000E+0\t0.000000E+0\t0.000000E+0\t1.000000E+0";
+    char temperature_data[] = "0.000000E+0\t1.000000E+0\t2.000000E+0\t3.000000E+0";
+    char frequency_data[] = "0.000000E+0\t1.000000E+0\t2.000000E+0\t3.000000E+0\t0.000000E+0";
+    const char* title_type = "test";
+    const char* extra_info = "Extra information";
+    const char* col_names = "Resistance,Inductance";
+
+    char* bmp_filename = DCWrite(target_data, temperature_data, frequency_data, title_type, extra_info, col_names);
+    if (bmp_filename != NULL) {
+        printf("BMP file created: %s\n", bmp_filename);
+    } else {
+        printf("Failed to create BMP file\n");
+    }
+
+    return 0;
 }

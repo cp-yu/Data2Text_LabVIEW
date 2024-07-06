@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 // 创建一个包含起始值、步长和终点值的双精度数组
-__declspec(dllexport) double* create_double_array(double start, double step, double end, int* length) {
+__declspec(dllexport) double* step(double start, double step, double end, int* length) {
     // 计算数组的长度
     int len = (int)((end - start) / step) + 1;
     *length = len;

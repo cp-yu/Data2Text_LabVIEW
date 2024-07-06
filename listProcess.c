@@ -8,7 +8,7 @@ int compare(const void* a, const void* b) {
 }
 
 // 对数组进行排序和去重
-__declspec(dllexport) double* sort_and_deduplicate(double* array, int* length) {
+__declspec(dllexport) double* listProcess(double* array, int* length) {
     // 对数组进行排序
     qsort(array, *length, sizeof(double), compare);
 
