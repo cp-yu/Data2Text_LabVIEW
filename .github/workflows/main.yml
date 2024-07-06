@@ -21,12 +21,12 @@ jobs:
 
     - name: Create combined source file
       run: |
-      echo '#include "Tofile.c"' > all_functions.c
-      for file in *.c; do
-        if [ "$file" != "all_functions.c" ]; then
-        echo "#include \"$file\"" >> all_functions.c
-        fi
-      done
+        echo '#include "Tofile.c"' > all_functions.c
+        for file in *.c; do
+          if [ "$file" != "all_functions.c" ]; then
+            echo "#include \"$file\"" >> all_functions.c
+          fi
+        done
 
     - name: Build 32-bit dynamic libraries
       run: |
