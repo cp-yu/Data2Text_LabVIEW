@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#include "helper.h"
+// #include "helper.h"
 
 __declspec(dllexport) void ToText(double* list_a, int len_a, double* list_b, int len_b, 
                                   const char* title, const char* extra_info, const char* col_name_a, const char* col_name_b) {

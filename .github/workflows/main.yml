@@ -19,31 +19,27 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y mingw-w64
 
-    - name: Build 32-bit helper.dll
+    - name: Create combined source file
       run: |
-        i686-w64-mingw32-gcc -shared -static -O3 -fPIC -o helper32.dll *.c -I.
-
-    - name: Build 64-bit helper.dll
-      run: |
-        x86_64-w64-mingw32-gcc -shared -static -O3 -fPIC -o helper64.dll *.c -I.
+        echo '#include "Tofile.c"' > all_functions.c
+        echo '#include "ToText.c"' >> all_functions.c
+        echo '#include "ToTextM.c"' >> all_functions.c
 
     - name: Build 32-bit dynamic libraries
       run: |
         for file in *.c; do
-          if [ "$file" != "helper.c" ]; then
-            base_name=$(basename "$file" .c)
-            i686-w64-mingw32-gcc -shared -static -O3 -fPIC -o "${base_name}32.dll" "$file" -I. -L. -lhelper32
-          fi
+          base_name=$(basename "$file" .c)
+          i686-w64-mingw32-gcc -shared -static -O3 -fPIC -o "${base_name}32.dll" "$file"
         done
+        i686-w64-mingw32-gcc -shared -static -O3 -fPIC -o "all_functions32.dll" all_functions.c
 
     - name: Build 64-bit dynamic libraries
       run: |
         for file in *.c; do
-          if [ "$file" != "helper.c" ]; then
-            base_name=$(basename "$file" .c)
-            x86_64-w64-mingw32-gcc -shared -static -O3 -fPIC -o "${base_name}64.dll" "$file" -I. -L. -lhelper64
-          fi
+          base_name=$(basename "$file" .c)
+          x86_64-w64-mingw32-gcc -shared -static -O3 -fPIC -o "${base_name}64.dll" "$file"
         done
+        x86_64-w64-mingw32-gcc -shared -static -O3 -fPIC -o "all_functions64.dll" all_functions.c
 
     - name: Get current Git hash and time
       id: get_info

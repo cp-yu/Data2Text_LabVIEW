@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "helper.h"
+// #include "helper.h"
 
 __declspec(dllexport) void ToTextM(double* lists, int length, int num_columns, const char* title, const char* extra_info, const char* col_names) {
     FILE *file = fopen(title, "w");
