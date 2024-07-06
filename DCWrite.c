@@ -80,13 +80,13 @@ __declspec(dllexport) char* DCWrite(const char* target_data, const char* tempera
 
         // Split target data into sections
         char* target_data_copy = strdup(target_data);
-        char* section = strtok(target_data_copy, "\n");
+        char* section = strtok(target_data_copy, "\r\n");
 
         // First section
         fprintf(file, "[%s]\n", col_name_1);
         fprintf(file, "Temperature(℃)\tFrequency(Hz)\t%s\n", col_name_1);
 
-        section = strtok(NULL, "\n"); // Skip the section header
+        section = strtok(NULL, "\r\n"); // Skip the section header
         for (int i = 0; i < temp_count; i++) {
             for (int j = 0; j < freq_count; j++) {
                 if (section) {
@@ -105,14 +105,14 @@ __declspec(dllexport) char* DCWrite(const char* target_data, const char* tempera
                     fprintf(file, "%s\t%s\t%s\n", temp_tokens[i], freq_tokens[j], "0.000000E+0");
                 }
             }
-            section = strtok(NULL, "\n");
+            section = strtok(NULL, "\r\n");
         }
 
         // Second section
         fprintf(file, "[%s]\n", col_name_2);
         fprintf(file, "Temperature(℃)\tFrequency(Hz)\t%s\n", col_name_2);
 
-        section = strtok(NULL, "\n"); // Skip the section header
+        section = strtok(NULL, "\r\n"); // Skip the section header
         for (int i = 0; i < temp_count; i++) {
             for (int j = 0; j < freq_count; j++) {
                 if (section) {
@@ -131,7 +131,7 @@ __declspec(dllexport) char* DCWrite(const char* target_data, const char* tempera
                     fprintf(file, "%s\t%s\t%s\n", temp_tokens[i], freq_tokens[j], "0.000000E+0");
                 }
             }
-            section = strtok(NULL, "\n");
+            section = strtok(NULL, "\r\n");
         }
 
         // Free allocated memory
