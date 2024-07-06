@@ -35,16 +35,46 @@ __declspec(dllexport) char* Tofile(char* lists, const char* title_type, const ch
         fprintf(file, "\n");
         free(col_names_copy);
 
-        // Write data vertically
+        // Write data with row and column swapping
+        char* rows[100];  // Assuming max 100 rows
+        int row_count = 0;
+        
+        // Split rows by newline
         char* lists_copy = strdup(lists);
-        token = strtok(lists_copy, ",");
+        token = strtok(lists_copy, "\n");
         while (token != NULL) {
-            fprintf(file, "%s\n", token);
-            fflush(file);  // Flush the file buffer to ensure data is written immediately
-            printf("Wrote data: %s\n", token);
-            token = strtok(NULL, ",");
+            rows[row_count++] = strdup(token);
+            token = strtok(NULL, "\n");
         }
+
+        // Tokenize each row and store columns
+        char* data[100][100];  // Assuming max 100 rows and 100 columns
+        int col_count = 0;
+
+        for (int i = 0; i < row_count; i++) {
+            int col_index = 0;
+            token = strtok(rows[i], "\t");
+            while (token != NULL) {
+                data[i][col_index++] = strdup(token);
+                token = strtok(NULL, "\t");
+            }
+            col_count = col_index > col_count ? col_index : col_count;
+        }
+
+        // Write data by swapping rows and columns
+        for (int i = 0; i < col_count; i++) {
+            for (int j = 0; j < row_count; j++) {
+                fprintf(file, "%s\t", data[j][i]);
+                fflush(file);  // Flush the file buffer to ensure data is written immediately
+            }
+            fprintf(file, "\n");
+        }
+
+        // Free allocated memory
         free(lists_copy);
+        for (int i = 0; i < row_count; i++) {
+            free(rows[i]);
+        }
 
         fclose(file);
         printf("File %s closed\n", filename);
