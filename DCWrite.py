@@ -3,7 +3,8 @@ import os
 
 # 加载DLL
 # 加载DLL文件
-dll_path = os.path.abspath('DCWrite32.dll')
+# dll_path = os.path.abspath('DCWrite32.dll')
+dll_path = os.path.abspath('all_functions32.dll')
 if not os.path.exists(dll_path):
     raise FileNotFoundError(f"The DLL file was not found: {dll_path}")
 
