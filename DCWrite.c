@@ -62,19 +62,29 @@ __declspec(dllexport) char* DCWrite(const char* target_data, const char* tempera
         temp_data_copy = strdup(temperature_data);
         freq_data_copy = strdup(frequency_data);
 
-        // Split temperature data into tokens
+        // Split temperature data into tokens and remove \r \n characters
         int i = 0;
         token = strtok(temp_data_copy, "\t");
         while (token != NULL) {
-            temp_tokens[i++] = strdup(token);
+            size_t len = strlen(token);
+            temp_tokens[i] = (char*)malloc((len + 1) * sizeof(char));
+            strcpy(temp_tokens[i], token);
+            // Remove any \r or \n characters
+            temp_tokens[i][strcspn(temp_tokens[i], "\r\n")] = 0;
+            i++;
             token = strtok(NULL, "\t");
         }
 
-        // Split frequency data into tokens
+        // Split frequency data into tokens and remove \r \n characters
         i = 0;
         token = strtok(freq_data_copy, "\t");
         while (token != NULL) {
-            freq_tokens[i++] = strdup(token);
+            size_t len = strlen(token);
+            freq_tokens[i] = (char*)malloc((len + 1) * sizeof(char));
+            strcpy(freq_tokens[i], token);
+            // Remove any \r or \n characters
+            freq_tokens[i][strcspn(freq_tokens[i], "\r\n")] = 0;
+            i++;
             token = strtok(NULL, "\t");
         }
 
