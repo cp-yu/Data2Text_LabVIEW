@@ -35,30 +35,57 @@ __declspec(dllexport) char* Tofile(char* lists, const char* title_type, const ch
         fprintf(file, "\n");
         free(col_names_copy);
 
-        // Write data with row and column swapping
-        char* rows[100];  // Assuming max 100 rows
+        // Determine the number of rows and columns
         int row_count = 0;
+        int col_count = 0;
         
-        // Split rows by newline
         char* lists_copy = strdup(lists);
-        token = strtok(lists_copy, "\n");
-        while (token != NULL) {
-            rows[row_count++] = strdup(token);
-            token = strtok(NULL, "\n");
+        char* temp = lists_copy;
+
+        // Count rows
+        while (*temp) {
+            if (*temp == '\n') row_count++;
+            temp++;
+        }
+        row_count++;  // For the last row
+
+        // Count columns (assuming all rows have the same number of columns)
+        temp = lists_copy;
+        char* line = strtok(temp, "\n");
+        while (line) {
+            if (col_count == 0) {
+                char* temp_line = strdup(line);
+                char* col_token = strtok(temp_line, "\t");
+                while (col_token) {
+                    col_count++;
+                    col_token = strtok(NULL, "\t");
+                }
+                free(temp_line);
+            }
+            line = strtok(NULL, "\n");
+        }
+        free(lists_copy);
+
+        // Allocate memory for data array
+        char*** data = (char***)malloc(row_count * sizeof(char**));
+        for (int i = 0; i < row_count; i++) {
+            data[i] = (char**)malloc(col_count * sizeof(char*));
         }
 
-        // Tokenize each row and store columns
-        char* data[100][100];  // Assuming max 100 rows and 100 columns
-        int col_count = 0;
-
-        for (int i = 0; i < row_count; i++) {
-            int col_index = 0;
-            token = strtok(rows[i], "\t");
-            while (token != NULL) {
-                data[i][col_index++] = strdup(token);
-                token = strtok(NULL, "\t");
+        // Split lists into data array
+        lists_copy = strdup(lists);
+        line = strtok(lists_copy, "\n");
+        int row = 0;
+        while (line) {
+            int col = 0;
+            char* col_token = strtok(line, "\t");
+            while (col_token) {
+                data[row][col] = strdup(col_token);
+                col_token = strtok(NULL, "\t");
+                col++;
             }
-            col_count = col_index > col_count ? col_index : col_count;
+            line = strtok(NULL, "\n");
+            row++;
         }
 
         // Write data by swapping rows and columns
@@ -73,8 +100,12 @@ __declspec(dllexport) char* Tofile(char* lists, const char* title_type, const ch
         // Free allocated memory
         free(lists_copy);
         for (int i = 0; i < row_count; i++) {
-            free(rows[i]);
+            for (int j = 0; j < col_count; j++) {
+                free(data[i][j]);
+            }
+            free(data[i]);
         }
+        free(data);
 
         fclose(file);
         printf("File %s closed\n", filename);
