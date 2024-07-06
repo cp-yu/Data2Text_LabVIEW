@@ -3,7 +3,6 @@
 #include <string.h>
 #include <time.h>
 #include <direct.h>  // For _mkdir on Windows
-// #include "helper.h"
 
 __declspec(dllexport) char* Tofile(char* lists, const char* title_type, const char* extra_info, const char* col_names) {
     // Create data directory if it does not exist
@@ -36,16 +35,15 @@ __declspec(dllexport) char* Tofile(char* lists, const char* title_type, const ch
         fprintf(file, "\n");
         free(col_names_copy);
 
-        // Write data
+        // Write data vertically
         char* lists_copy = strdup(lists);
         token = strtok(lists_copy, ",");
         while (token != NULL) {
-            fprintf(file, "%s\t", token);
+            fprintf(file, "%s\n", token);
             fflush(file);  // Flush the file buffer to ensure data is written immediately
             printf("Wrote data: %s\n", token);
             token = strtok(NULL, ",");
         }
-        fprintf(file, "\n");
         free(lists_copy);
 
         fclose(file);
