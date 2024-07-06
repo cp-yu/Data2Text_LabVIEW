@@ -3,8 +3,9 @@
 #include <string.h>
 #include <time.h>
 #include <direct.h>  // For _mkdir on Windows
+#include "helper.h"
 
-__declspec(dllexport) char* ToText(char* lists, const char* title_type, const char* extra_info, const char* col_names) {
+__declspec(dllexport) char* Tofile(char* lists, const char* title_type, const char* extra_info, const char* col_names) {
     // Create data directory if it does not exist
     _mkdir("data");
 

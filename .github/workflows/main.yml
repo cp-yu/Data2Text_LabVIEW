@@ -19,18 +19,30 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y mingw-w64
 
+    - name: Build 32-bit helper.dll
+      run: |
+        i686-w64-mingw32-gcc -shared -static -O3 -fPIC -o helper32.dll *.c -I.
+
+    - name: Build 64-bit helper.dll
+      run: |
+        x86_64-w64-mingw32-gcc -shared -static -O3 -fPIC -o helper64.dll *.c -I.
+
     - name: Build 32-bit dynamic libraries
       run: |
         for file in *.c; do
-          base_name=$(basename "$file" .c)
-          i686-w64-mingw32-gcc -shared -static -O3 -fPIC -o "${base_name}32.dll" "$file"
+          if [ "$file" != "helper.c" ]; then
+            base_name=$(basename "$file" .c)
+            i686-w64-mingw32-gcc -shared -static -O3 -fPIC -o "${base_name}32.dll" "$file" -I. -L. -lhelper32
+          fi
         done
 
     - name: Build 64-bit dynamic libraries
       run: |
         for file in *.c; do
-          base_name=$(basename "$file" .c)
-          x86_64-w64-mingw32-gcc -shared -static -O3 -fPIC -o "${base_name}64.dll" "$file"
+          if [ "$file" != "helper.c" ]; then
+            base_name=$(basename "$file" .c)
+            x86_64-w64-mingw32-gcc -shared -static -O3 -fPIC -o "${base_name}64.dll" "$file" -I. -L. -lhelper64
+          fi
         done
 
     - name: Get current Git hash and time
