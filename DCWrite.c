@@ -4,7 +4,7 @@
 #include <time.h>
 #include <direct.h>  // For _mkdir on Windows
 
-__declspec(dllexport) char* DCWrite(const char* target_data, const char* temperature_data, const char* frequency_data, const char* title_type, const char* extra_info, const char* col_names) {
+__declspec(dllexport) char* DCWrite(const char* target_data, const char* temperature_data, const char* frequency_data,const char* real_temperatureData, const char* title_type, const char* extra_info, const char* col_names) {
     // Create data directory if it does not exist
     _mkdir("data");
 
@@ -31,11 +31,12 @@ __declspec(dllexport) char* DCWrite(const char* target_data, const char* tempera
         char* col_name_2 = col_token ? strdup(col_token) : NULL;
         free(col_names_copy);
 
-        // Split temperature and frequency data
+        // Split temperature, real temperature and frequency data
         int temp_count = 0;
         int freq_count = 0;
 
         char* temp_data_copy = strdup(temperature_data);
+        char* real_temp_data_copy = strdup(real_temperatureData);
         char* freq_data_copy = strdup(frequency_data);
 
         // Count temperature tokens
@@ -55,11 +56,13 @@ __declspec(dllexport) char* DCWrite(const char* target_data, const char* tempera
         free(temp_data_copy);
         free(freq_data_copy);
 
-        // Allocate memory for temperature and frequency data
+        // Allocate memory for temperature, real temperature and frequency data
         char** temp_tokens = (char**)malloc(temp_count * sizeof(char*));
+        char** real_temp_tokens = (char**)malloc(freq_count*temp_count * sizeof(char*));
         char** freq_tokens = (char**)malloc(freq_count * sizeof(char*));
 
         temp_data_copy = strdup(temperature_data);
+        real_temp_data_copy = strdup(real_temperatureData);
         freq_data_copy = strdup(frequency_data);
 
         // Split temperature data into tokens and remove \r \n characters
@@ -71,6 +74,19 @@ __declspec(dllexport) char* DCWrite(const char* target_data, const char* tempera
             strcpy(temp_tokens[i], token);
             // Remove any \r or \n characters
             temp_tokens[i][strcspn(temp_tokens[i], "\r\n")] = 0;
+            i++;
+            token = strtok(NULL, "\t");
+        }
+
+        // Split real temperature data into tokens and remove \r \n characters
+        i = 0;
+        token = strtok(real_temp_data_copy, "\t");
+        while (token != NULL) {
+            size_t len = strlen(token);
+            real_temp_tokens[i] = (char*)malloc((len + 1) * sizeof(char));
+            strcpy(real_temp_tokens[i], token);
+            // Remove any \r or \n characters
+            real_temp_tokens[i][strcspn(real_temp_tokens[i], "\r\n")] = 0;
             i++;
             token = strtok(NULL, "\t");
         }
@@ -94,7 +110,7 @@ __declspec(dllexport) char* DCWrite(const char* target_data, const char* tempera
 
         // First section
         fprintf(file, "[%s]\n", col_name_1);
-        fprintf(file, "Temperature(℃)\tFrequency(Hz)\t%s\n", col_name_1);
+        fprintf(file, "Temperature(℃)\tReal Temperature(℃)\tFrequency(Hz)\t%s\n", col_name_1);
 
         section = strtok(NULL, "\r\n"); // Skip the section header
         for (int i = 0; i < temp_count; i++) {
@@ -106,13 +122,13 @@ __declspec(dllexport) char* DCWrite(const char* target_data, const char* tempera
                         value = strtok(NULL, "\t");
                     }
                     if (value) {
-                        fprintf(file, "%s\t%s\t%s\n", temp_tokens[i], freq_tokens[j], value);
+                        fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[i], freq_tokens[j], value);
                     } else {
-                        fprintf(file, "%s\t%s\t%s\n", temp_tokens[i], freq_tokens[j], "0.000000E+0");
+                        fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[i], freq_tokens[j], "0.000000E+0");
                     }
                     free(line);
                 } else {
-                    fprintf(file, "%s\t%s\t%s\n", temp_tokens[i], freq_tokens[j], "0.000000E+0");
+                    fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[i], freq_tokens[j], "0.000000E+0");
                 }
             }
             section = strtok(NULL, "\r\n");
@@ -120,7 +136,7 @@ __declspec(dllexport) char* DCWrite(const char* target_data, const char* tempera
 
         // Second section
         fprintf(file, "[%s]\n", col_name_2);
-        fprintf(file, "Temperature(℃)\tFrequency(Hz)\t%s\n", col_name_2);
+        fprintf(file, "Temperature(℃)\tReal Temperature(℃)\tFrequency(Hz)\t%s\n", col_name_2);
 
         section = strtok(NULL, "\r\n"); // Skip the section header
         for (int i = 0; i < temp_count; i++) {
@@ -132,13 +148,13 @@ __declspec(dllexport) char* DCWrite(const char* target_data, const char* tempera
                         value = strtok(NULL, "\t");
                     }
                     if (value) {
-                        fprintf(file, "%s\t%s\t%s\n", temp_tokens[i], freq_tokens[j], value);
+                        fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[i], freq_tokens[j], value);
                     } else {
-                        fprintf(file, "%s\t%s\t%s\n", temp_tokens[i], freq_tokens[j], "0.000000E+0");
+                        fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[i], freq_tokens[j], "0.000000E+0");
                     }
                     free(line);
                 } else {
-                    fprintf(file, "%s\t%s\t%s\n", temp_tokens[i], freq_tokens[j], "0.000000E+0");
+                    fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[i], freq_tokens[j], "0.000000E+0");
                 }
             }
             section = strtok(NULL, "\r\n");
@@ -149,14 +165,19 @@ __declspec(dllexport) char* DCWrite(const char* target_data, const char* tempera
         for (int i = 0; i < temp_count; i++) {
             free(temp_tokens[i]);
         }
+        for (int i = 0; i < temp_count*freq_count; i++) {
+            free(real_temp_tokens[i]);
+        }
         for (int i = 0; i < freq_count; i++) {
             free(freq_tokens[i]);
         }
         free(temp_tokens);
+        free(real_temp_tokens);
         free(freq_tokens);
         if (col_name_1) free(col_name_1);
         if (col_name_2) free(col_name_2);
         free(temp_data_copy);
+        free(real_temp_data_copy);
         free(freq_data_copy);
 
         fclose(file);
