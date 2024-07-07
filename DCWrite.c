@@ -90,6 +90,11 @@ __declspec(dllexport) char* DCWrite(const char* target_data, const char* tempera
             token = strtok(NULL, "\t");
         }
 
+        // Fill remaining real_temp_tokens with NULL if there are not enough tokens
+        for (int j = idx; j < temp_count * freq_count; j++) {
+            real_temp_tokens[j] = NULL;
+        }
+
         // Split frequency data into tokens and remove \r \n characters
         i = 0;
         token = strtok(freq_data_copy, "\t");
@@ -122,13 +127,13 @@ __declspec(dllexport) char* DCWrite(const char* target_data, const char* tempera
                         value = strtok(NULL, "\t");
                     }
                     if (value) {
-                        fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[idx], freq_tokens[j], value);
+                        fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[idx] ? real_temp_tokens[idx] : "NULL", freq_tokens[j], value);
                     } else {
-                        fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[idx], freq_tokens[j], "0.000000E+0");
+                        fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[idx] ? real_temp_tokens[idx] : "NULL", freq_tokens[j], "0.000000E+0");
                     }
                     free(line);
                 } else {
-                    fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[idx], freq_tokens[j], "0.000000E+0");
+                    fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[idx] ? real_temp_tokens[idx] : "NULL", freq_tokens[j], "0.000000E+0");
                 }
                 idx++;
             }
@@ -150,13 +155,13 @@ __declspec(dllexport) char* DCWrite(const char* target_data, const char* tempera
                         value = strtok(NULL, "\t");
                     }
                     if (value) {
-                        fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[idx], freq_tokens[j], value);
+                        fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[idx] ? real_temp_tokens[idx] : "NULL", freq_tokens[j], value);
                     } else {
-                        fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[idx], freq_tokens[j], "0.000000E+0");
+                        fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[idx] ? real_temp_tokens[idx] : "NULL", freq_tokens[j], "0.000000E+0");
                     }
                     free(line);
                 } else {
-                    fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[idx], freq_tokens[j], "0.000000E+0");
+                    fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[idx] ? real_temp_tokens[idx] : "NULL", freq_tokens[j], "0.000000E+0");
                 }
                 idx++;
             }
@@ -169,7 +174,9 @@ __declspec(dllexport) char* DCWrite(const char* target_data, const char* tempera
             free(temp_tokens[i]);
         }
         for (int i = 0; i < temp_count * freq_count; i++) {
-            free(real_temp_tokens[i]);
+            if (real_temp_tokens[i] != NULL) {
+                free(real_temp_tokens[i]);
+            }
         }
         for (int i = 0; i < freq_count; i++) {
             free(freq_tokens[i]);
