@@ -62,7 +62,7 @@ __declspec(dllexport) char* DCWrite(const char* target_data, const char* tempera
         char** freq_tokens = (char**)malloc(freq_count * sizeof(char*));
 
         temp_data_copy = strdup(temperature_data);
-        real_temp_data_copy = strdup(real_temperatureData);
+        char* real_temp_data_copy = strdup(real_temperatureData);
         freq_data_copy = strdup(frequency_data);
 
         // Split temperature data into tokens and remove \r \n characters
