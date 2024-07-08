@@ -114,6 +114,7 @@ __declspec(dllexport) char* DCWrite(const char* target_data, const char* tempera
         sections[0] = strtok(target_data_copy, "\r\n\r\n");
         sections[0] = strtok(NULL, "\r\n\r\n");
         sections[1] = strtok(NULL, "\r\n\r\n");
+        sections[1] = strtok(NULL, "\r\n\r\n");
         printf("Section 1: %s\n", sections[0]);
         printf("Section 2: %s\n", sections[1]);
 
@@ -130,17 +131,12 @@ __declspec(dllexport) char* DCWrite(const char* target_data, const char* tempera
                 if (section) {
                     char* line = strdup(section);
                     char* value = strtok(line, "\t");
-                    for (int k = 0; k < j; k++) {
-                        value = strtok(NULL, "\t");
-                    }
                     if (value) {
                         fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[idx] ? real_temp_tokens[idx] : "NULL", freq_tokens[j], value);
                     } else {
-                        fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[idx] ? real_temp_tokens[idx] : "NULL", freq_tokens[j], "0.000000E+0");
+                        fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[idx] ? real_temp_tokens[idx] : "NULL", freq_tokens[j], "None");
                     }
                     free(line);
-                } else {
-                    fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[idx] ? real_temp_tokens[idx] : "NULL", freq_tokens[j], "0.000000E+0");
                 }
                 idx++;
             }
@@ -160,17 +156,12 @@ __declspec(dllexport) char* DCWrite(const char* target_data, const char* tempera
                 if (section) {
                     char* line = strdup(section);
                     char* value = strtok(line, "\t");
-                    for (int k = 0; k < j; k++) {
-                        value = strtok(NULL, "\t");
-                    }
                     if (value) {
                         fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[idx] ? real_temp_tokens[idx] : "NULL", freq_tokens[j], value);
                     } else {
-                        fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[idx] ? real_temp_tokens[idx] : "NULL", freq_tokens[j], "0.000000E+0");
+                        fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[idx] ? real_temp_tokens[idx] : "NULL", freq_tokens[j], "None");
                     }
                     free(line);
-                } else {
-                    fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[idx] ? real_temp_tokens[idx] : "NULL", freq_tokens[j], "0.000000E+0");
                 }
                 idx++;
             }
