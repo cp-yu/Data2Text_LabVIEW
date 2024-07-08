@@ -39,10 +39,10 @@ __declspec(dllexport) char* DCWrite(const char* target_data, const char* tempera
         char* freq_data_copy = strdup(frequency_data);
 
         // Count temperature tokens
-        char* token = strtok(temp_data_copy, "\r\n");
+        char* token = strtok(temp_data_copy, "\t");
         while (token != NULL) {
             temp_count++;
-            token = strtok(NULL, "\r\n");
+            token = strtok(NULL, "\t");
         }
 
         // Count frequency tokens
@@ -66,7 +66,7 @@ __declspec(dllexport) char* DCWrite(const char* target_data, const char* tempera
 
         // Split temperature data into tokens and remove \r \n characters
         int i = 0;
-        token = strtok(temp_data_copy, "\r\n");
+        token = strtok(temp_data_copy, "\t");
         while (token != NULL) {
             size_t len = strlen(token);
             temp_tokens[i] = (char*)malloc((len + 1) * sizeof(char));
@@ -74,7 +74,7 @@ __declspec(dllexport) char* DCWrite(const char* target_data, const char* tempera
             // Remove any \r or \n characters
             temp_tokens[i][strcspn(temp_tokens[i], "\r\n")] = 0;
             i++;
-            token = strtok(NULL, "\r\n");
+            token = strtok(NULL, "\t");
         }
 
         // Split real temperature data into tokens and remove \r \n characters
@@ -108,54 +108,71 @@ __declspec(dllexport) char* DCWrite(const char* target_data, const char* tempera
             token = strtok(NULL, "\t");
         }
 
-        // Split target data into sections using ",\\s0,\\s0]" as delimiter
+        // Split target data into sections
         char* target_data_copy = strdup(target_data);
-        char* useless_section = strtok(target_data_copy, ",\\s0,\\s0]");
-        char* target1_data = strtok(NULL, ",\\s0,\\s0]");
-        char* target2_data = strtok(NULL, ",\\s0,\\s0]");
+        // char* section = strtok(target_data_copy, "\r\n");
+        char* sections[2] = {0};
+        sections[0] = strtok(target_data_copy, "\r\n\r\n");
+        sections[1] = strtok(NULL, "\r\n\r\n");
+        printf("Section 1: %s\n", sections[0]);
+        printf("Section 2: %s\n", sections[1]);
 
-        // Write first section
+        // First section
         fprintf(file, "[%s]\n", col_name_1);
         fprintf(file, "Temperature(℃)\tReal Temperature(℃)\tFrequency(Hz)\t%s\n", col_name_1);
 
-        char* line = strtok(target1_data, "\r\n");
+        section = strtok(sections[0], "\r\n"); // Skip the section header
+        section = strtok(sections[0], "\r\n"); // read first line
+        
         idx = 0; // Reset idx for writing real temperatures
-        while (line) {
-            char* value_token = strtok(line, "\t");
-            for (int i = 0; i < temp_count; i++) {
-                for (int j = 0; j < freq_count; j++) {
-                    if (value_token) {
-                        fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[idx] ? real_temp_tokens[idx] : "NULL", freq_tokens[j], value_token);
-                        value_token = strtok(NULL, "\t");
-                    } else {
-                        fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[idx] ? real_temp_tokens[idx] : "NULL", freq_tokens[j], "none");
+        for (int i = 0; i < temp_count; i++) {
+            for (int j = 0; j < freq_count; j++) {
+                if (section) {
+                    char* line = strdup(section);
+                    char* value = strtok(line, "\t");
+                    for (int k = 0; k < j; k++) {
+                        value = strtok(NULL, "\t");
                     }
-                    idx++;
+                    if (value) {
+                        fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[idx] ? real_temp_tokens[idx] : "NULL", freq_tokens[j], value);
+                    } else {
+                        fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[idx] ? real_temp_tokens[idx] : "NULL", freq_tokens[j], "0.000000E+0");
+                    }
+                    free(line);
+                } else {
+                    fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[idx] ? real_temp_tokens[idx] : "NULL", freq_tokens[j], "0.000000E+0");
                 }
+                idx++;
             }
-            line = strtok(NULL, "\r\n");
+            section = strtok(NULL, "\r\n");
         }
 
-        // Write second section
+        // Second section
         fprintf(file, "[%s]\n", col_name_2);
         fprintf(file, "Temperature(℃)\tReal Temperature(℃)\tFrequency(Hz)\t%s\n", col_name_2);
 
-        line = strtok(target2_data, "\r\n");
+        section = strtok(sections[1], "\r\n"); // Skip the section header
         idx = 0; // Reset idx for writing real temperatures
-        while (line) {
-            char* value_token = strtok(line, "\t");
-            for (int i = 0; i < temp_count; i++) {
-                for (int j = 0; j < freq_count; j++) {
-                    if (value_token) {
-                        fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[idx] ? real_temp_tokens[idx] : "NULL", freq_tokens[j], value_token);
-                        value_token = strtok(NULL, "\t");
-                    } else {
-                        fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[idx] ? real_temp_tokens[idx] : "NULL", freq_tokens[j], "none");
+        for (int i = 0; i < temp_count; i++) {
+            for (int j = 0; j < freq_count; j++) {
+                if (section) {
+                    char* line = strdup(section);
+                    char* value = strtok(line, "\t");
+                    for (int k = 0; k < j; k++) {
+                        value = strtok(NULL, "\t");
                     }
-                    idx++;
+                    if (value) {
+                        fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[idx] ? real_temp_tokens[idx] : "NULL", freq_tokens[j], value);
+                    } else {
+                        fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[idx] ? real_temp_tokens[idx] : "NULL", freq_tokens[j], "0.000000E+0");
+                    }
+                    free(line);
+                } else {
+                    fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[idx] ? real_temp_tokens[idx] : "NULL", freq_tokens[j], "0.000000E+0");
                 }
+                idx++;
             }
-            line = strtok(NULL, "\r\n");
+            section = strtok(NULL, "\r\n");
         }
 
         // Free allocated memory
