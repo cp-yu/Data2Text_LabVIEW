@@ -1,28 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// 创建一个包含起始值、步长和终点值的双精度数组
-__declspec(dllexport) double* step(double start, double step, double end, int* length) {
-    // 计算数组的长度
-    int len = (int)((end - start) / step) + 1;
-    *length = len;
+__declspec(dllexport) void step(double start, double step, double end, double* array, int length) {
+    int i = 0;
+    double value = start;
 
-    // 为数组分配内存
-    double* array = (double*)malloc(len * sizeof(double));
-    if (array == NULL) {
-        fprintf(stderr, "Memory allocation failed\n");
-        exit(EXIT_FAILURE);
+    while (value <= end && i < length) {
+        array[i] = value;
+        value += step;
+        i++;
     }
 
-    // 填充数组
-    for (int i = 0; i < len; ++i) {
-        array[i] = start + i * step;
-        if (array[i] > end) {
-            array[i] = end;
-            *length = i + 1;
-            break;
-        }
+    // Fill remaining array slots with 0.0 if end is reached before filling the array
+    for (; i < length; i++) {
+        array[i] = end;
     }
-
-    return array;
 }
