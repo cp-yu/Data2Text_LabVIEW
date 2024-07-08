@@ -111,9 +111,9 @@ __declspec(dllexport) char* DCWrite(const char* target_data, const char* tempera
         // Split target data into sections using ",\s0,\s0]" as delimiter
         char* target_data_copy = strdup(target_data);
         char* sections[3] = {0};
-        sections[0] = strtok(target_data_copy, ",\\s0,\\s0]\r\n");
-        sections[1] = strtok(NULL, ",\\s0,\\s0]\r\n");
-        sections[2] = strtok(NULL, ",\\s0,\\s0]\r\n");
+        sections[0] = strtok(target_data_copy, ",\\s0,\\s0]");
+        sections[1] = strtok(NULL, ",\\s0,\\s0]");
+        sections[2] = strtok(NULL, ",\\s0,\\s0]");
 
         // Skip the first section which is useless
         char* target1_data = sections[1];
