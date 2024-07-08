@@ -112,6 +112,7 @@ __declspec(dllexport) char* DCWrite(const char* target_data, const char* tempera
         char* target_data_copy = strdup(target_data);
         char* sections[2] = {0};
         sections[0] = strtok(target_data_copy, "\r\n\r\n");
+        sections[0] = strtok(NULL, "\r\n\r\n");
         sections[1] = strtok(NULL, "\r\n\r\n");
         printf("Section 1: %s\n", sections[0]);
         printf("Section 2: %s\n", sections[1]);
