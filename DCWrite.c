@@ -39,10 +39,10 @@ __declspec(dllexport) char* DCWrite(const char* target_data, const char* tempera
         char* freq_data_copy = strdup(frequency_data);
 
         // Count temperature tokens
-        char* token = strtok(temp_data_copy, "\t");
+        char* token = strtok(temp_data_copy, "\r\n");
         while (token != NULL) {
             temp_count++;
-            token = strtok(NULL, "\t");
+            token = strtok(NULL, "\r\n");
         }
 
         // Count frequency tokens
@@ -66,7 +66,7 @@ __declspec(dllexport) char* DCWrite(const char* target_data, const char* tempera
 
         // Split temperature data into tokens and remove \r \n characters
         int i = 0;
-        token = strtok(temp_data_copy, "\t");
+        token = strtok(temp_data_copy, "\r\n");
         while (token != NULL) {
             size_t len = strlen(token);
             temp_tokens[i] = (char*)malloc((len + 1) * sizeof(char));
@@ -74,7 +74,7 @@ __declspec(dllexport) char* DCWrite(const char* target_data, const char* tempera
             // Remove any \r or \n characters
             temp_tokens[i][strcspn(temp_tokens[i], "\r\n")] = 0;
             i++;
-            token = strtok(NULL, "\t");
+            token = strtok(NULL, "\r\n");
         }
 
         // Split real temperature data into tokens and remove \r \n characters
@@ -108,16 +108,11 @@ __declspec(dllexport) char* DCWrite(const char* target_data, const char* tempera
             token = strtok(NULL, "\t");
         }
 
-        // Split target data into sections using ",\s0,\s0]" as delimiter
+        // Split target data into sections using ",\\s0,\\s0]" as delimiter
         char* target_data_copy = strdup(target_data);
-        char* sections[3] = {0};
-        sections[0] = strtok(target_data_copy, ",\\s0,\\s0]");
-        sections[1] = strtok(NULL, ",\\s0,\\s0]");
-        sections[2] = strtok(NULL, ",\\s0,\\s0]");
-
-        // Skip the first section which is useless
-        char* target1_data = sections[1];
-        char* target2_data = sections[2];
+        char* useless_section = strtok(target_data_copy, ",\\s0,\\s0]");
+        char* target1_data = strtok(NULL, ",\\s0,\\s0]");
+        char* target2_data = strtok(NULL, ",\\s0,\\s0]");
 
         // Write first section
         fprintf(file, "[%s]\n", col_name_1);
@@ -125,22 +120,18 @@ __declspec(dllexport) char* DCWrite(const char* target_data, const char* tempera
 
         char* line = strtok(target1_data, "\r\n");
         idx = 0; // Reset idx for writing real temperatures
-        for (int i = 0; i < temp_count; i++) {
-            for (int j = 0; j < freq_count; j++) {
-                if (line) {
-                    char* value = strtok(line, "\t");
-                    for (int k = 0; k < j; k++) {
-                        value = strtok(NULL, "\t");
-                    }
-                    if (value) {
-                        fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[idx] ? real_temp_tokens[idx] : "NULL", freq_tokens[j], value);
+        while (line) {
+            char* value_token = strtok(line, "\t");
+            for (int i = 0; i < temp_count; i++) {
+                for (int j = 0; j < freq_count; j++) {
+                    if (value_token) {
+                        fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[idx] ? real_temp_tokens[idx] : "NULL", freq_tokens[j], value_token);
+                        value_token = strtok(NULL, "\t");
                     } else {
-                        fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[idx] ? real_temp_tokens[idx] : "NULL", freq_tokens[j], "0.000000E+0");
+                        fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[idx] ? real_temp_tokens[idx] : "NULL", freq_tokens[j], "none");
                     }
-                } else {
-                    fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[idx] ? real_temp_tokens[idx] : "NULL", freq_tokens[j], "0.000000E+0");
+                    idx++;
                 }
-                idx++;
             }
             line = strtok(NULL, "\r\n");
         }
@@ -151,22 +142,18 @@ __declspec(dllexport) char* DCWrite(const char* target_data, const char* tempera
 
         line = strtok(target2_data, "\r\n");
         idx = 0; // Reset idx for writing real temperatures
-        for (int i = 0; i < temp_count; i++) {
-            for (int j = 0; j < freq_count; j++) {
-                if (line) {
-                    char* value = strtok(line, "\t");
-                    for (int k = 0; k < j; k++) {
-                        value = strtok(NULL, "\t");
-                    }
-                    if (value) {
-                        fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[idx] ? real_temp_tokens[idx] : "NULL", freq_tokens[j], value);
+        while (line) {
+            char* value_token = strtok(line, "\t");
+            for (int i = 0; i < temp_count; i++) {
+                for (int j = 0; j < freq_count; j++) {
+                    if (value_token) {
+                        fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[idx] ? real_temp_tokens[idx] : "NULL", freq_tokens[j], value_token);
+                        value_token = strtok(NULL, "\t");
                     } else {
-                        fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[idx] ? real_temp_tokens[idx] : "NULL", freq_tokens[j], "0.000000E+0");
+                        fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[idx] ? real_temp_tokens[idx] : "NULL", freq_tokens[j], "none");
                     }
-                } else {
-                    fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[idx] ? real_temp_tokens[idx] : "NULL", freq_tokens[j], "0.000000E+0");
+                    idx++;
                 }
-                idx++;
             }
             line = strtok(NULL, "\r\n");
         }
