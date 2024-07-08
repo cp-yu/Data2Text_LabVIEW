@@ -108,65 +108,77 @@ __declspec(dllexport) char* DCWrite(const char* target_data, const char* tempera
             token = strtok(NULL, "\t");
         }
 
-        // Split target data into sections
-        char* target_data_copy = strdup(target_data);
-        char* sections[2] = {0};
-        sections[0] = strtok(target_data_copy, "\r\n\r\n");
-        sections[0] = strtok(NULL, "\r\n\r\n");
-        sections[1] = strtok(NULL, "\r\n\r\n");
-        sections[1] = strtok(NULL, "\r\n\r\n");
-        printf("Section 1: %s\n", sections[0]);
-        printf("Section 2: %s\n", sections[1]);
+// Split target data into sections
+char* target_data_copy = strdup(target_data);
+char* sections[2] = {0};
+sections[0] = strtok(target_data_copy, "\r\n\r\n");
+sections[1] = strtok(NULL, "\r\n\r\n");
 
-        // First section
-        fprintf(file, "[%s]\n", col_name_1);
-        fprintf(file, "Temperature(℃)\tReal Temperature(℃)\tFrequency(Hz)\t%s\n", col_name_1);
+printf("Section 1: %s\n", sections[0]);
+printf("Section 2: %s\n", sections[1]);
 
-        char* section = strtok(sections[0], "\r\n"); // Skip the section header
-        // section = strtok(NULL, "\r\n"); // read first line
+// First section
+fprintf(file, "[%s]\n", col_name_1);
+fprintf(file, "Temperature(℃)\tReal Temperature(℃)\tFrequency(Hz)\t%s\n", col_name_1);
 
-        idx = 0; // Reset idx for writing real temperatures
-        for (int i = 0; i < temp_count; i++) {
-            for (int j = 0; j < freq_count; j++) {
-                if (section) {
-                    char* line = strdup(section);
-                    char* value = strtok(line, "\t");
-                    if (value) {
-                        fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[idx] ? real_temp_tokens[idx] : "NULL", freq_tokens[j], value);
-                    } else {
-                        fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[idx] ? real_temp_tokens[idx] : "NULL", freq_tokens[j], "None");
-                    }
-                    free(line);
-                }
-                idx++;
+// Skip the section header and start reading lines
+char* section = strtok(sections[0], "\r\n");
+section = strtok(NULL, "\r\n"); // Read first line of data
+
+idx = 0; // Reset idx for writing real temperatures
+for (int i = 0; i < temp_count; i++) {
+    for (int j = 0; j < freq_count; j++) {
+        if (section) {
+            char* line = strdup(section);
+            char* value = strtok(line, "\t");
+            for (int k = 0; k < j; k++) {
+                value = strtok(NULL, "\t");
             }
-            section = strtok(NULL, "\r\n");
-        }
-
-        // Second section
-        fprintf(file, "[%s]\n", col_name_2);
-        fprintf(file, "Temperature(℃)\tReal Temperature(℃)\tFrequency(Hz)\t%s\n", col_name_2);
-
-        section = strtok(sections[1], "\r\n"); // Skip the section header
-        // section = strtok(NULL, "\r\n"); // read first line
-
-        idx = 0; // Reset idx for writing real temperatures
-        for (int i = 0; i < temp_count; i++) {
-            for (int j = 0; j < freq_count; j++) {
-                if (section) {
-                    char* line = strdup(section);
-                    char* value = strtok(line, "\t");
-                    if (value) {
-                        fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[idx] ? real_temp_tokens[idx] : "NULL", freq_tokens[j], value);
-                    } else {
-                        fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[idx] ? real_temp_tokens[idx] : "NULL", freq_tokens[j], "None");
-                    }
-                    free(line);
-                }
-                idx++;
+            if (value) {
+                fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[idx] ? real_temp_tokens[idx] : "NULL", freq_tokens[j], value);
+            } else {
+                fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[idx] ? real_temp_tokens[idx] : "NULL", freq_tokens[j], "None");
             }
-            section = strtok(NULL, "\r\n");
+            free(line);
         }
+        idx++;
+    }
+    section = strtok(NULL, "\r\n");
+}
+
+// Second section
+fprintf(file, "[%s]\n", col_name_2);
+fprintf(file, "Temperature(℃)\tReal Temperature(℃)\tFrequency(Hz)\t%s\n", col_name_2);
+
+// Skip the section header and start reading lines
+section = strtok(sections[1], "\r\n");
+section = strtok(NULL, "\r\n"); // Read first line of data
+
+idx = 0; // Reset idx for writing real temperatures
+for (int i = 0; i < temp_count; i++) {
+    for (int j = 0; j < freq_count; j++) {
+        if (section) {
+            char* line = strdup(section);
+            char* value;
+            if (j == 0) {
+                value = strtok(line, "\t");
+            } else {
+                value = strtok(NULL, "\t");
+            }
+            if (value) {
+                fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[idx] ? real_temp_tokens[idx] : "NULL", freq_tokens[j], value);
+            } else {
+                fprintf(file, "%s\t%s\t%s\t%s\n", temp_tokens[i], real_temp_tokens[idx] ? real_temp_tokens[idx] : "NULL", freq_tokens[j], "None");
+            }
+            free(line);
+        }
+        idx++;
+    }
+    section = strtok(NULL, "\r\n");
+}
+
+free(target_data_copy);
+
 
         // Free allocated memory
         free(target_data_copy);
