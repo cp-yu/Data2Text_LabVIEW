@@ -122,7 +122,7 @@ __declspec(dllexport) char* DCWrite(const char* target_data, const char* tempera
         fprintf(file, "Temperature(℃)\tReal Temperature(℃)\tFrequency(Hz)\t%s\n", col_name_1);
 
         char* section = strtok(sections[0], "\r\n"); // Skip the section header
-        section = strtok(NULL, "\r\n"); // read first line
+        // section = strtok(NULL, "\r\n"); // read first line
 
         idx = 0; // Reset idx for writing real temperatures
         for (int i = 0; i < temp_count; i++) {
@@ -152,7 +152,7 @@ __declspec(dllexport) char* DCWrite(const char* target_data, const char* tempera
         fprintf(file, "Temperature(℃)\tReal Temperature(℃)\tFrequency(Hz)\t%s\n", col_name_2);
 
         section = strtok(sections[1], "\r\n"); // Skip the section header
-        section = strtok(NULL, "\r\n"); // read first line
+        // section = strtok(NULL, "\r\n"); // read first line
 
         idx = 0; // Reset idx for writing real temperatures
         for (int i = 0; i < temp_count; i++) {
