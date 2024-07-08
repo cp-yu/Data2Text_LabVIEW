@@ -21,10 +21,10 @@ dcwrite_dll.DCWrite.argtypes = [
 ]
 
 # 测试数据
-target_data = b"[0,\s0,\s0]\r\n1.000296E+2\t1.000159E+2\t1.000289E+2\r\n\r\n[1,\s0,\s0]\r\n-5.099601E+3\t-1.838699E+3\t-1.414158E+3\r\n\r\n"
+target_data = b"[0,\s0,\s0]\r\n1.000296E+2\t1.000159E+2\t1.000289E+2\r\n1.002200E+2\t1.020000E+2\t1.100000E+2\r\n\r\n[1,\s0,\s0]\r\n-5.099601E+3\t-1.838699E+3\t-1.414158E+3\r\n-1.121000E+3\t-2.323000E+3\t-1.233000E+3\r\n\r\n"
 
-temperature_data = b"1.000000E+2\r\n"
-real_temperature_data = b"0.000000E+0\t0.000000E+0\t0.000000E+0\r\n"
+temperature_data = b"0.000000E+0\t1.000000E+1\r\n"
+real_temperature_data = b"1.000000E+1\t1.020000E+2\t1.010000E+2\t1.030000E+2\t1.040000E+2\t1.060000E+2\r\n"
 frequency_data = b"2.000000E+1\t7.000000E+1\t1.000000E+2\r\n"
 title_type = b"test"
 extra_info = b"Extra information"

@@ -21,7 +21,7 @@ __declspec(dllexport) char* Tofile(char* lists, const char* title_type, const ch
         // Write extra info
         fprintf(file, "%s\n", extra_info);
         fflush(file);  // Flush the file buffer to ensure data is written immediately
-        printf("Wrote extra info: %s\n", extra_info);
+        // printf("Wrote extra info: %s\n", extra_info);
 
         // Write column names
         char* col_names_copy = strdup(col_names);
@@ -35,10 +35,10 @@ __declspec(dllexport) char* Tofile(char* lists, const char* title_type, const ch
         fprintf(file, "\n");
         free(col_names_copy);
 
-        // Determine the number of rows and columns
+        // Count rows and columns
         int row_count = 0;
         int col_count = 0;
-        
+
         char* lists_copy = strdup(lists);
         char* temp = lists_copy;
 
@@ -51,7 +51,7 @@ __declspec(dllexport) char* Tofile(char* lists, const char* title_type, const ch
 
         // Count columns (assuming all rows have the same number of columns)
         temp = lists_copy;
-        char* line = strtok(temp, "\n");
+        char* line = strtok(temp, "\r\n");
         while (line) {
             if (col_count == 0) {
                 char* temp_line = strdup(line);
@@ -62,7 +62,7 @@ __declspec(dllexport) char* Tofile(char* lists, const char* title_type, const ch
                 }
                 free(temp_line);
             }
-            line = strtok(NULL, "\n");
+            line = strtok(NULL, "\r\n");
         }
         free(lists_copy);
 
@@ -74,7 +74,7 @@ __declspec(dllexport) char* Tofile(char* lists, const char* title_type, const ch
 
         // Split lists into data array
         lists_copy = strdup(lists);
-        line = strtok(lists_copy, "\n");
+        line = strtok(lists_copy, "\r\n");
         int row = 0;
         while (line) {
             int col = 0;
@@ -84,7 +84,7 @@ __declspec(dllexport) char* Tofile(char* lists, const char* title_type, const ch
                 col_token = strtok(NULL, "\t");
                 col++;
             }
-            line = strtok(NULL, "\n");
+            line = strtok(NULL, "\r\n");
             row++;
         }
 
@@ -108,9 +108,9 @@ __declspec(dllexport) char* Tofile(char* lists, const char* title_type, const ch
         free(data);
 
         fclose(file);
-        printf("File %s closed\n", filename);
+        // printf("File %s closed\n", filename);
     } else {
-        printf("Failed to open file %s\n", filename);
+        // printf("Failed to open file %s\n", filename);
         return NULL;
     }
 
