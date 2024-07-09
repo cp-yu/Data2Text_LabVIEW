@@ -35,77 +35,8 @@ __declspec(dllexport) char* Tofile(char* lists, const char* title_type, const ch
         fprintf(file, "\n");
         free(col_names_copy);
 
-        // Count rows and columns
-        int row_count = 0;
-        int col_count = 0;
-
-        char* lists_copy = strdup(lists);
-        char* temp = lists_copy;
-
-        // Count rows
-        while (*temp) {
-            if (*temp == '\n') row_count++;
-            temp++;
-        }
-        row_count++;  // For the last row
-
-        // Count columns (assuming all rows have the same number of columns)
-        temp = lists_copy;
-        char* line = strtok(temp, "\r\n");
-        while (line) {
-            if (col_count == 0) {
-                char* temp_line = strdup(line);
-                char* col_token = strtok(temp_line, "\t");
-                while (col_token) {
-                    col_count++;
-                    col_token = strtok(NULL, "\t");
-                }
-                free(temp_line);
-            }
-            line = strtok(NULL, "\r\n");
-        }
-        free(lists_copy);
-
-        // Allocate memory for data array
-        char*** data = (char***)malloc(row_count * sizeof(char**));
-        for (int i = 0; i < row_count; i++) {
-            data[i] = (char**)malloc(col_count * sizeof(char*));
-        }
-
-        // Split lists into data array
-        lists_copy = strdup(lists);
-        line = strtok(lists_copy, "\r\n");
-        int row = 0;
-        while (line) {
-            int col = 0;
-            char* col_token = strtok(line, "\t");
-            while (col_token) {
-                data[row][col] = strdup(col_token);
-                col_token = strtok(NULL, "\t");
-                col++;
-            }
-            line = strtok(NULL, "\r\n");
-            row++;
-        }
-
-        // Write data by swapping rows and columns
-        for (int i = 0; i < col_count; i++) {
-            for (int j = 0; j < row_count; j++) {
-                fprintf(file, "%s\t", data[j][i]);
-                fflush(file);  // Flush the file buffer to ensure data is written immediately
-            }
-            fprintf(file, "\n");
-        }
-
-        // Free allocated memory
-        free(lists_copy);
-        for (int i = 0; i < row_count; i++) {
-            for (int j = 0; j < col_count; j++) {
-                free(data[i][j]);
-            }
-            free(data[i]);
-        }
-        free(data);
+        // Write data
+        fprintf(file, "%s", lists);
 
         fclose(file);
         // printf("File %s closed\n", filename);
