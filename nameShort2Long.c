@@ -12,15 +12,15 @@ typedef struct {
 Mapping mappingsUnit[] = {
     {"L", "Inductance (H)"},
     {"C", "Capacitance (F)"},
-    {"R", "Resistance (Ω)"},
-    {"Z", "Impedance (Ω)"},
+    {"R", "Resistance (Ohm)"},
+    {"Z", "Impedance (Ohm)"},
     {"Y", "Admittance (S)"},
-    {"X", "Reactance (Ω)"},
+    {"X", "Reactance (Ohm)"},
     {"G", "Conductance (S)"},
     {"B", "Susceptance (S)"},
     {"Q", "Quality Factor"},
     {"D", "Dissipation Factor"},
-    {"Angle", "Phase Angle (°)"}
+    {"Angle", "Phase Angle (degrees)"}
 };
 Mapping mappings[] = {
     {"L", "Inductance"},
