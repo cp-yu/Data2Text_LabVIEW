@@ -39,7 +39,7 @@ Mapping mappings[] = {
 __declspec(dllexport) const char* nameShort2LongUnit(const char* input) {
     for (size_t i = 0; i < (sizeof(mappings) / sizeof(mappings[0])); ++i) {
         if (strcmp(input, mappingsUnit[i].key) == 0) {
-            return mappings[i].value;
+            return mappingsUnit[i].value;
         }
     }
     return "Unknown Parameter";
