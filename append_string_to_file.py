@@ -14,7 +14,7 @@ dll.append_string_to_file.restype = ctypes.c_int
 
 # 测试函数
 def test_append_string_to_file():
-    test_file = './test_file.txt'
+    test_file = './test_file.sdf'
     test_string = 'This is a test string.'
 
     # 确保测试文件存在
