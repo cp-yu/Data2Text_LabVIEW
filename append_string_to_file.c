@@ -22,7 +22,7 @@ __declspec(dllexport) int append_string_to_file(const char* str, const char* fil
         return -1; // 文件打开失败
     }
     // 写入新字符串和换行符
-    fprintf(file, "\n%s", modified_str);
+    fprintf(file, "\n%s", str);
 
     // 释放内存并关闭文件
     fclose(file);
