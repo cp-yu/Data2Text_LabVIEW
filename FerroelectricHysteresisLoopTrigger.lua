@@ -1,26 +1,11 @@
 function SweepVListMeasureI_yunxin(smu, vlist, stime, points)
-    -- Save settings in temporary variables so they can be restored at the end.
-    -- local l_d_screen = display.screen
-
-    -- Clear the front panel display then prompt for input parameters if missing.
-    -- display.clear()  
-
-    -- -- Update display with test info.
-    -- display.settext("SweepVListMeasureI")  -- Line 1 (20 characters max)
-
-    ibuffer=smu.makebuffer(points)
-
-    -- Configure source and measure settings.
-    smu.source.output = smu.OUTPUT_OFF
-    smu.source.func = smu.OUTPUT_DCVOLTS
-    smu.source.autorangev = smu.AUTORANGE_ON
-    smu.source.levelv = vlist[1]
-    smu.measure.autozero = smu.AUTOZERO_ONCE
-
+    ibuffer=smuX.makebuffer(points)
     ibuffer.clear()
     ibuffer.appendmode = 1
     ibuffer.collecttimestamps = 1
     ibuffer.collectsourcevalues = 1
+
+    smu.source.levelv = vlist[1]
 
     -- Reset trigger model
     smu.trigger.arm.stimulus = 0
@@ -65,12 +50,6 @@ function SweepVListMeasureI_yunxin(smu, vlist, stime, points)
     waitcomplete()
     smu.source.output = smu.OUTPUT_OFF
 
-    -- Update the front panel display and restore modified settings.
-    -- display.setcursor(2,1)             
-    -- display.settext("Test complete.")      -- Line 2 (32 characters max)
-    -- delay(2)
-    -- display.clear()
-    -- display.screen = l_d_screen
 end
 
 function FerroelectricEysteresisLoop(smuX, Vmax, Vmin, points, cycles, timesPercycles)
@@ -80,20 +59,42 @@ function FerroelectricEysteresisLoop(smuX, Vmax, Vmin, points, cycles, timesPerc
     -- local points = %d
     -- local cycles = %d
     -- local timesPercycles = %f
-
+    
+    local abs_Vmax=math.max(math.abs(Vmax), math.abs(Vmin))
     local timeStep = timesPercycles / points / 2-0.000008
+
+    smuX.source.levelv=abs_Vmax
+    smuX.measure.autorangei=smuX.AUTORANGE_ON
+    smuX.measure.autozero = smuX.AUTOZERO_ON
+    smuX.measure.count=6
+    smuX.source.output=smuX.OUTPUT_ON
+    local current_i=smuX.measure.i()
+    currnet_i= current_i*1.2
+
     smuX.source.delay = 0
     smuX.measure.delay = 0
     smuX.measure.nplc=1
     smuX.measure.count=1
 
-    smuX.measure.autozero=1 -- to zero once
+
+
+
+    -- smuX.source.rangev=math.max(math.abs(starti), math.abs(stopi))
+    smuX.measure.autozero = smuX.AUTOZERO_OFF
+    smuX.measure.autorangei=smuX.AUTORANGE_OFF
+    smuX.measure.rangei=current_i
     smuX.measure.filter.enable=smuX.FILTER_OFF
-        
-    smuX.source.autorangev = smuX.AUTORANGE_ON
+    
+    -- Configure source and measure settings.
+    smuX.source.output = smuX.OUTPUT_OFF
+    smuX.source.func = smuX.OUTPUT_DCVOLTS
+    smuX.source.autorangev = smuX.AUTORANGE_OFF
+    smuX.source.rangev= abs_Vmax
     smuX.source.limiti = 0.00001
     -- smuX.measure.autorangev = smuX.AUTORANGE_ON
     
+
+
     -- 生成listv
     local listv = {}
     local step = 2*(Vmax-Vmin)/(points-1)
