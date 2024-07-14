@@ -5,21 +5,31 @@ function FerroelectricEysteresisLoop(smuX, Vmax, Vmin, points, cycles, timesPerc
     -- local points = %d
     -- local cycles = %d
     -- local timesPercycles = %f
-    local timeStep = timesPercycles / points / 2-0.000008
+
+    -- local timeStep = timesPercycles / points / 2-0.000008
+    smuX.source.delay = 0
+    smuX.measure.delay = timesPercycles / points / 2-0.000008
+    smuX.measure.nplc=1
+    smuX.measure.count=1
+
+    smuX.measure.autozero=1 -- to zero once
+    smuX.measure.filter.enable=smuX.FILTER_OFF
+    
     smuX.nvbuffer1.timestampresolution = 0.000001
-    -- smuX.nvbuffer2.timestampresolution = 0.000001
     smuX.nvbuffer1.clear()
     smuX.nvbuffer2.clear()
     smuX.nvbuffer1.appendmode = 1  
     smuX.nvbuffer2.appendmode = 1  
     smuX.nvbuffer1.collecttimestamps = 1
     smuX.nvbuffer2.collecttimestamps = 0
-    smuX.source.limiti = 0.1
+    smuX.nvbuffer1.collectsourcevalues = 0
+    smuX.nvbuffer2.collectsourcevalues = 1
+    
+    smuX.source.limiti = 0.00001
     smuX.source.autorangev = smuX.AUTORANGE_ON
     smuX.source.autorangei = smuX.AUTORANGE_ON
     smuX.source.output = smuX.OUTPUT_ON
-    smuX.measure.delay = 0.001
-    smuX.measure.count=1
+    smuX.measure.autorangev = smuX.AUTORANGE_ON
     
     local function sweep_voltage(startV, stopV, step)
         if startV < stopV then
@@ -49,9 +59,11 @@ function FerroelectricEysteresisLoop(smuX, Vmax, Vmin, points, cycles, timesPerc
     
     -- printbuffer(1, smuX.nvbuffer1.n, smuX.nvbuffer1.timestamps,smuX.nvbuffer1,smuX.nvbuffer2)  
     waitcomplete()
+    delay(0.3)
     print("detectEnd")
-    delay(0.9)
+    delay(0.3)
     printbuffer(1, smuX.nvbuffer1.n, smuX.nvbuffer1.timestamps)
     printbuffer(1,smuX.nvbuffer1.n,smuX.nvbuffer1)
+    printbuffer(1,smuX.nvbuffer2.n,smuX.nvbuffer2.sourcevalues)
     printbuffer(1,smuX.nvbuffer2.n,smuX.nvbuffer2)
 end
