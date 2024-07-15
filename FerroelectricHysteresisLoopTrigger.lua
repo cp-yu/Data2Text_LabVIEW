@@ -1,5 +1,5 @@
 function SweepVListMeasureI_yunxin(smu, vlist, stime, points)
-    ibuffer=smuX.makebuffer(points)
+    ibuffer=smu.makebuffer(points)
     ibuffer.clear()
     ibuffer.appendmode = 1
     ibuffer.collecttimestamps = 1
@@ -65,12 +65,16 @@ function FerroelectricEysteresisLoop(smuX, Vmax, Vmin, points, cycles, timesPerc
 
     smuX.source.levelv=abs_Vmax
     smuX.measure.autorangei=smuX.AUTORANGE_ON
-    smuX.measure.autozero = smuX.AUTOZERO_ON
-    smuX.measure.count=6
+    smuX.measure.autozero = smuX.AUTOZERO_AUTO
+    smuX.measure.filter.count = 20
+    smuX.measure.filter.type = smuX.FILTER_MEDIAN
+    smuX.measure.filter.enable = smuX.FILTER_ON
+    smuX.measure.count=1
     smuX.source.output=smuX.OUTPUT_ON
-    local current_i=smuX.measure.i()
-    currnet_i= current_i*1.2
+    current_i=smuX.measure.i()
+    current_i = current_i*2
 
+    
     smuX.source.delay = 0
     smuX.measure.delay = 0
     smuX.measure.nplc=1
@@ -125,8 +129,5 @@ function FerroelectricEysteresisLoop(smuX, Vmax, Vmin, points, cycles, timesPerc
     waitcomplete()
     delay(0.3)
     print("detectEnd")
-    delay(0.3)
-    printbuffer(1, ibuffer.n, ibuffer.timestamps)
-    printbuffer(1, ibuffer.n, ibuffer.sourcevalues)
-    printbuffer(1, ibuffer.n, ibuffer)
+    smuX.reset()
 end
