@@ -1,5 +1,4 @@
 function SweepVListMeasureI_yunxin(smu, vlist, stime, points)
-
     ibuffer.clear()
     ibuffer.appendmode = 1
     ibuffer.collecttimestamps = 1
@@ -22,18 +21,11 @@ function SweepVListMeasureI_yunxin(smu, vlist, stime, points)
     smu.trigger.measure.action = smu.ENABLE
 
     -- Configure the delay
-    -- if (stime > 0) then
-    --     trigger.timer[1].reset()
-    --     trigger.timer[1].delay = stime
-    --     smu.trigger.measure.stimulus = trigger.timer[1].EVENT_ID
-    --     trigger.timer[1].stimulus = smu.trigger.SOURCE_COMPLETE_EVENT_ID
-    -- end
-
     trigger.blender[1].clear()
     trigger.blender[1].reset()
-    trigger.blender[1].orenable=true
-    trigger.blender[1].stimulus[1]=trigger.timer[1].EVENT_ID
-    trigger.blender[1].stimulus[2]=smu.trigger.ARMED_EVENT_ID
+    trigger.blender[1].orenable = true
+    trigger.blender[1].stimulus[1] = trigger.timer[1].EVENT_ID
+    trigger.blender[1].stimulus[2] = smu.trigger.ARMED_EVENT_ID
     if (stime > 0) then
         trigger.timer[1].reset()
         trigger.timer[1].delay = stime
@@ -49,10 +41,9 @@ function SweepVListMeasureI_yunxin(smu, vlist, stime, points)
     smu.trigger.initiate()
     waitcomplete()
     smu.source.output = smu.OUTPUT_OFF
-
 end
 
-function FerroelectricEysteresisLoop(smuX, Vmax, Vmin, points, cycles, timesPercycles)
+function FerroelectricEysteresisLoop(smuX, Vmax, Vmin, points, cycles, timesPercycles, sourcev, measurei)
     -- local smuX= %s
     -- local Vmax = %f
     -- local Vmin = %f
@@ -60,77 +51,72 @@ function FerroelectricEysteresisLoop(smuX, Vmax, Vmin, points, cycles, timesPerc
     -- local cycles = %d
     -- local timesPercycles = %f
     
-    local abs_Vmax=math.max(math.abs(Vmax), math.abs(Vmin))
-    local timeStep = timesPercycles / points / 2-0.000008
-
-    ibuffer=smuX.makebuffer( points * cycles + points / 4)
+    ibuffer = smuX.makebuffer(points * cycles + points / 4)
     ibuffer.clear()
     ibuffer.appendmode = 0
-    -- ibuffer.collecttimestamps = 1
-    -- ibuffer.collectsourcevalues = 1
 
     smuX.reset()
-    
-    smuX.source.levelv=abs_Vmax*0.6
-    smuX.measure.autorangei=smuX.AUTORANGE_ON
-    smuX.measure.autozero = smuX.AUTOZERO_AUTO
-    -- smuX.measure.filter.count = 20
-    -- smuX.measure.filter.type = smuX.FILTER_MEDIAN
-    -- smuX.measure.filter.enable = smuX.FILTER_ON
-    smuX.measure.count=20
-    smuX.source.output=smuX.OUTPUT_ON
-    delay(0.3)
-    smuX.measure.i(ibuffer)
-    stats = smuX.buffer.getstats(ibuffer)
-    smuX.source.levelv=0
-    delay(0.3)
-    -- smuX.source.output=smuX.OUTPUT_OFF
-    
+    if (measurei == 0) then 
+        smuX.source.levelv = abs_Vmax * 0.6
+        smuX.measure.autorangei = smuX.AUTORANGE_ON
+        smuX.measure.autozero = smuX.AUTOZERO_AUTO
+        smuX.measure.count = 20
+        smuX.source.output = smuX.OUTPUT_ON
+        delay(0.3)
+        smuX.measure.i(ibuffer)
+        stats = smuX.buffer.getstats(ibuffer)
+        smuX.source.levelv = 0
+        delay(0.3)
+    end
 
-    
     smuX.source.delay = 0
-    smuX.measure.delay = 0 -- default value is -1. autodelay depended on measure.rangei
-    smuX.measure.nplc=1
-    smuX.measure.count=1
+    smuX.measure.delay = 0
+    smuX.measure.nplc = 1
+    smuX.measure.count = 1
 
-
-
-
-    -- smuX.source.rangev=math.max(math.abs(starti), math.abs(stopi))
     smuX.measure.autozero = smuX.AUTOZERO_OFF
-    smuX.measure.autorangei=smuX.AUTORANGE_OFF
-    smuX.measure.rangei=stats.max.reading*3
-    smuX.measure.filter.enable=smuX.FILTER_OFF
-    
+    smuX.measure.autorangei = smuX.AUTORANGE_OFF
+
+    if (measurei == 0) then
+        smuX.measure.rangei = stats.max.reading * 3 -- if measurei==0, using this
+    else
+        smuX.measure.rangei = measurei -- else using measurei
+    end
+
+    smuX.measure.filter.enable = smuX.FILTER_OFF
+
     -- Configure source and measure settings.
     smuX.source.output = smuX.OUTPUT_OFF
     smuX.source.func = smuX.OUTPUT_DCVOLTS
     smuX.source.autorangev = smuX.AUTORANGE_OFF
-    smuX.source.rangev= abs_Vmax
-    smuX.source.limiti = 0.00001 -- For Save
-    -- smuX.measure.autorangev = smuX.AUTORANGE_ON
-    
 
+    if (sourcev == 0) then
+        smuX.source.rangev = abs_Vmax -- if sourcev==0, using this
+    else
+        smuX.source.rangev = sourcev -- else using sourcev
+    end
 
-    -- 生成listv
+    smuX.source.limiti = 0.00001 
+
+    -- Generate listv
     local listv = {}
-    local step = 2*(Vmax-Vmin)/(points-1)
-    
--- 第一段从0到Vmax
+    local step = 2 * (Vmax - Vmin) / (points - 1)
+
+    -- First segment from 0 to Vmax
     local i = 0
     while i < Vmax do
         table.insert(listv, i)
         i = i + step
     end
-    
-    -- 第二段从Vmax到Vmin
+
+    -- Second segment from Vmax to Vmin
     i = Vmax
     while i > Vmin do
         table.insert(listv, i)
         i = i - step
     end
-    
-    -- 第三段从Vmin到0
+
+    -- Third segment from Vmin to 0
     i = Vmin
     while i < 0 do
         table.insert(listv, i)
@@ -140,8 +126,8 @@ function FerroelectricEysteresisLoop(smuX, Vmax, Vmin, points, cycles, timesPerc
     SweepVListMeasureI_yunxin(smuX, listv, timeStep, points * cycles + points / 4)
 
     waitcomplete()
-    smuX.source.levelv=0
-    smuX.source.output=smuX.OUTPUT_ON
+    smuX.source.levelv = 0
+    smuX.source.output = smuX.OUTPUT_ON
     delay(0.5)
     print("detectEnd")
     delay(0.8)
