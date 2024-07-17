@@ -1,4 +1,4 @@
-function PyroelectricPreBiasVoltage(Vmax,time2Vmax)
+function PyroelectricPreBiasVoltage(smuX,Vmax,time2Vmax)
 
     -- function FerroelectricEysteresisLoop(smuX, Vmax, Vmin, points, cycles, timesPercycles)
 
